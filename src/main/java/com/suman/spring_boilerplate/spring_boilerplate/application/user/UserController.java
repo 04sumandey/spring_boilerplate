@@ -1,15 +1,14 @@
 package com.suman.spring_boilerplate.spring_boilerplate.application.user;
 
 
-import com.suman.spring_boilerplate.spring_boilerplate.application.user.dto.CreateUserRequestDto;
-import com.suman.spring_boilerplate.spring_boilerplate.application.user.dto.CreateUserResponseDto;
-import com.suman.spring_boilerplate.spring_boilerplate.application.user.dto.GetUserResponseDto;
+import com.suman.spring_boilerplate.spring_boilerplate.application.user.dto.*;
 import com.suman.spring_boilerplate.spring_boilerplate.common.responseUtil.Util;
 import com.suman.spring_boilerplate.spring_boilerplate.common.responseUtil.dto.Response;
 
 import com.suman.spring_boilerplate.spring_boilerplate.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 
+import org.hibernate.sql.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,4 +59,25 @@ public class UserController {
         }
     }
 
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Response<UpdateUserResponseDto>> updateUser(
+            @PathVariable UUID id, @RequestBody UpdateUserRequestDto updateDto) {
+        try {
+            User userToBeUpdated =updateDto.MapToUserEntity();
+            User updatedUser = userService.updateUserById(id, userToBeUpdated);
+            UpdateUserResponseDto responseDto = UpdateUserResponseDto.builder()
+                    .id(updatedUser.getId())
+                    .firstName(updatedUser.getFirstName())
+                    .lastName(updatedUser.getLastName())
+                    .email(updatedUser.getEmail())
+                    .phone(updatedUser.getPhone())
+                    .build();
+            return util.successBuilder(responseDto).toEntity();
+
+        } catch (Exception e) {
+            return util.<UpdateUserResponseDto>FailureBuilder(e).toEntity();
+        }
+
+
+    }
 }

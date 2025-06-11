@@ -19,4 +19,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User does not Exit"));
     }
+    public User updateUserById(UUID id,User user){
+        User curretUser =userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("User does not exist"));
+        curretUser.setId(id);
+        curretUser.setFirstName(user.getFirstName());
+        curretUser.setLastName(user.getLastName());
+        curretUser.setEmail(user.getEmail());
+        curretUser.setPhone(user.getPhone());
+        return userRepository.save(curretUser);
+    }
 }
